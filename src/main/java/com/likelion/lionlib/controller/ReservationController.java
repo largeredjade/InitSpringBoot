@@ -30,23 +30,23 @@ public class ReservationController {
     }
 
     @GetMapping("/reservations/{reservationsId}")
-    public ResponseEntity<ReserveResponse> getReserve(@PathVariable Long reservationId) {
-        log.info("getReservation: {}", reservationId);
+    public ResponseEntity<ReserveResponse> getReserve(@PathVariable("reservationsId") Long reservationsId) {
+        log.info("getReservation: {}", reservationsId);
 
-        ReserveResponse reservation = reservationService.getReserve(reservationId);
+        ReserveResponse reservation = reservationService.getReserve(reservationsId);
         return ResponseEntity.ok(reservation);
     }
 
-    @DeleteMapping("/reservations/{reservationId}")
-    public ResponseEntity<String> deleteReserve(@PathVariable Long reservationId) {
-        log.info("deleteReservation: {}", reservationId);
+    @DeleteMapping("/reservations/{reservationsId}")
+    public ResponseEntity<String> deleteReserve(@PathVariable("reservationsId") Long reservationsId) {
+        log.info("deleteReservation: {}", reservationsId);
 
-        reservationService.deleteReserve(reservationId);
+        reservationService.deleteReserve(reservationsId);
         return ResponseEntity.ok("예약이 취소되었습니다.");
     }
 
     @GetMapping("/members/{memberId}/reservations")
-    public ResponseEntity<List<ReserveResponse>> getMemberReservations(@PathVariable Long memberId) {
+    public ResponseEntity<List<ReserveResponse>> getMemberReservations(@PathVariable("memberId") Long memberId) {
         log.info("Request GET reservations for memberId: {}", memberId);
         List<ReserveResponse> reservations = reservationService.getMemberReservations(memberId);
         return ResponseEntity.ok(reservations);
