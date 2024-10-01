@@ -6,6 +6,7 @@ import com.likelion.lionlib.domain.Reservation;
 import com.likelion.lionlib.dto.CountReserveResponse;
 import com.likelion.lionlib.dto.ReservationRequest;
 import com.likelion.lionlib.dto.ReserveResponse;
+import com.likelion.lionlib.dto.CustomUserDetails;
 import com.likelion.lionlib.repository.ReservationRepository;
 import org.springframework.stereotype.Service;
 
@@ -23,8 +24,25 @@ public class ReservationService {
     }
 
     // 예약된 도서 조회
-    public ReserveResponse addReserve(ReservationRequest reservationRequest) {
-        Member member = globalService.findMemberById(reservationRequest.getMemberId());
+//    public ReserveResponse addReserve(ReservationRequest reservationRequest) {
+//        Member member = globalService.findMemberById(reservationRequest.getMemberId());
+//        Book book = globalService.findBookById(reservationRequest.getBookId());
+//
+//        reservationRepository.findByMemberAndBook(member, book).ifPresent(
+//                reservation -> { throw new RuntimeException("이미 예약된 도서입니다."); }
+//        );
+//
+//        Reservation newReservation = Reservation.builder()
+//                .member(member)
+//                .book(book)
+//                .build();
+//
+//        reservationRepository.save(newReservation);
+//
+//        return ReserveResponse.fromEntity(newReservation);
+//    }
+        public ReserveResponse addReserve(CustomUserDetails customUserDetails,ReservationRequest reservationRequest) {
+        Member member = globalService.findMemberById(customUserDetails.getId());
         Book book = globalService.findBookById(reservationRequest.getBookId());
 
         reservationRepository.findByMemberAndBook(member, book).ifPresent(
@@ -54,8 +72,8 @@ public class ReservationService {
         reservationRepository.deleteById(reservationId);
     }
     // 사용자 예약 정보 조회
-    public List<ReserveResponse> getMemberReservations(Long memberId) {
-		Member member = globalService.findMemberById(memberId);
+    public List<ReserveResponse> getMemberReservations(CustomUserDetails customUserDetails) {
+		Member member = globalService.findMemberById(customUserDetails.getId());
         List<Reservation> reserveList = reservationRepository.findByMember(member);
 		return reservationRepository.findByMember(member).stream().map((ReserveResponse::fromEntity)).toList();
 	}

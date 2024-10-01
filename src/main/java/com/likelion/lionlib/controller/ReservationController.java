@@ -1,11 +1,13 @@
 package com.likelion.lionlib.controller;
 
 import com.likelion.lionlib.dto.CountReserveResponse;
+import com.likelion.lionlib.dto.CustomUserDetails;
 import com.likelion.lionlib.dto.ReservationRequest;
 import com.likelion.lionlib.dto.ReserveResponse;
 import com.likelion.lionlib.service.ReservationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,10 +24,15 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity<ReserveResponse> addReserve(@RequestBody ReservationRequest reservationRequest) {
-        log.info("reservation: {}", reservationRequest);
+//    public ResponseEntity<ReserveResponse> addReserve(@RequestBody ReservationRequest reservationRequest) {
+//        log.info("reservation: {}", reservationRequest);
+//        ReserveResponse newReservation = reservationService.addReserve(reservationRequest);
+//        return ResponseEntity.ok(newReservation);
+//    }
 
-        ReserveResponse newReservation = reservationService.addReserve(reservationRequest);
+    public ResponseEntity<ReserveResponse> addReserve(@RequestBody ReservationRequest reservationRequest, @AuthenticationPrincipal CustomUserDetails customUserDetails){
+        log.info("reservation request: {}", reservationRequest);
+        ReserveResponse newReservation = reservationService.addReserve(customUserDetails, reservationRequest);
         return ResponseEntity.ok(newReservation);
     }
 
@@ -45,10 +52,10 @@ public class ReservationController {
         return ResponseEntity.ok("예약이 취소되었습니다.");
     }
 
-    @GetMapping("/members/{memberId}/reservations")
-    public ResponseEntity<List<ReserveResponse>> getMemberReservations(@PathVariable("memberId") Long memberId) {
-        log.info("Request GET reservations for memberId: {}", memberId);
-        List<ReserveResponse> reservations = reservationService.getMemberReservations(memberId);
+    @GetMapping("/members/reservations")
+    public ResponseEntity<List<ReserveResponse>> getMemberReservations(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        log.info("Request GET reservations for memberId: {}", customUserDetails);
+        List<ReserveResponse> reservations = reservationService.getMemberReservations(customUserDetails);
         return ResponseEntity.ok(reservations);
     }
 
