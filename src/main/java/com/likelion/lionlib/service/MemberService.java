@@ -5,6 +5,8 @@ import com.likelion.lionlib.domain.Profile;
 import com.likelion.lionlib.domain.Role;
 import com.likelion.lionlib.dto.MemberResponse;
 import com.likelion.lionlib.dto.ProfileRequest;
+import com.likelion.lionlib.exception.MemberNotFoundException;
+import com.likelion.lionlib.exception.ProfileNotFoundException;
 import com.likelion.lionlib.repository.MemberRepository;
 import com.likelion.lionlib.repository.ProfileRepository;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +38,7 @@ public class MemberService {
     // 로그인 처리
     public boolean login(String email, String password) {
         Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Invalid email or password"));
+                .orElseThrow(() -> new MemberNotFoundException(email));
 
         return member.getPassword().equals(password);
     }
@@ -52,7 +54,7 @@ public class MemberService {
         Member member = globalService.findMemberById(memberId);
 
         Profile profile = profileRepository.findByMember(member)
-                .orElseThrow(() -> new RuntimeException("Profile not found"));
+                .orElseThrow(() -> new ProfileNotFoundException(member));
 
         member.updateName(profileRequest.getName());
 

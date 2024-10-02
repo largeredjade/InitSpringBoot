@@ -7,6 +7,8 @@ import com.likelion.lionlib.dto.CountReserveResponse;
 import com.likelion.lionlib.dto.ReservationRequest;
 import com.likelion.lionlib.dto.ReserveResponse;
 import com.likelion.lionlib.dto.CustomUserDetails;
+import com.likelion.lionlib.exception.ReservationNotFoundException;
+import com.likelion.lionlib.exception.ReserveExistsException;
 import com.likelion.lionlib.repository.ReservationRepository;
 import org.springframework.stereotype.Service;
 
@@ -46,7 +48,7 @@ public class ReservationService {
         Book book = globalService.findBookById(reservationRequest.getBookId());
 
         reservationRepository.findByMemberAndBook(member, book).ifPresent(
-                reservation -> { throw new RuntimeException("이미 예약된 도서입니다."); }
+                reservation -> { throw new ReserveExistsException(); }
         );
 
         Reservation newReservation = Reservation.builder()
@@ -62,13 +64,13 @@ public class ReservationService {
     // 예약 정보 조회
     public ReserveResponse getReserve(Long reservationId) {
         Reservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new RuntimeException("없는 예약 정보입니다."));
+                .orElseThrow(() -> new ReservationNotFoundException(reservationId));
         return ReserveResponse.fromEntity(reservation);
     }
     // 예약 취소
     public void deleteReserve(Long reservationId) {
         Reservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new RuntimeException("예약을 취소했습니다."));
+                .orElseThrow(() -> new ReservationNotFoundException(reservationId));
         reservationRepository.deleteById(reservationId);
     }
     // 사용자 예약 정보 조회
